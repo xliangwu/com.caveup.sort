@@ -1,6 +1,6 @@
 com.caveup.sort
 ===============
 
-Sort
+Sort big files
 
 contract xliangwu@gmail.com
