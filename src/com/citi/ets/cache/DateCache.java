@@ -11,6 +11,13 @@ public final class DateCache {
 
     private static final Map<String, Date> dateCacheMap = new HashMap<String, Date>();
     private static final DateCache SINGLE_INSTANCE = new DateCache();
+    private static final ThreadLocal<SimpleDateFormat> localDateFormat = new ThreadLocal<SimpleDateFormat>() {
+
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("MM/dd/yyyy");
+        }
+    };
 
     private DateCache() {
     }
@@ -20,8 +27,7 @@ public final class DateCache {
     }
 
     public String formatDate(Date date) {
-        SimpleDateFormat simpleFormat = new SimpleDateFormat("MM/dd/yyyy");
-        return simpleFormat.format(date);
+        return localDateFormat.get().format(date);
     }
 
     public Date getDate(String input) {

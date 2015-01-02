@@ -48,15 +48,20 @@ public class PCSort extends AbstractInMemorySort {
         List<Future<List<String>>> futureList = new ArrayList<Future<List<String>>>();
 
         int core = Runtime.getRuntime().availableProcessors();
-        int threads = core + 5;
+        int threads = core <= 0 ? 1 : core;
         int step = trades.length / threads;
 
-        for (int i = 0; i < threads; i++) {
+        for (int i = 0; i <= threads; i++) {
             int start = i * step;
             int end = (i + 1) * step;
+            start = start > trades.length ? trades.length : start;
             end = end > trades.length ? trades.length : end;
-            futureList.add(threadPool.submit(new Produce(trades, start, end)));
+            if (start < end) {
+                futureList.add(threadPool.submit(new Produce(trades, start, end)));
+            }
         }
+        writer.write("Facility ID(Integer/SORT ASC),Product Type(String/SORT ASC), HOST ID(Integer/SORT ASC), MaturityDate(Date/SORT ASC), Exposure(Double/SORT ASC)");
+        writer.newLine();
         for (Future<List<String>> future : futureList) {
             List<String> res = future.get();
             for (String line : res) {

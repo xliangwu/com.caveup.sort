@@ -1,13 +1,13 @@
 package com.citi.ets;
 
-import com.citi.ets.sort.impl.PCSort;
+import com.citi.ets.sort.impl.NioSort;
 
 public class SortFactory {
 
     public static Sort getSort(SortMethod method) {
         Sort sort = null;
         if (method == SortMethod.DEFAULT) {
-            sort = new PCSort();
+            sort = new NioSort();
         }
         return sort;
     }

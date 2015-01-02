@@ -1,5 +1,6 @@
 package com.citi.ets;
 
+import java.nio.ByteBuffer;
 import java.util.Date;
 import com.citi.ets.cache.DateCache;
 import com.citi.ets.cache.IntegerCache;
@@ -10,21 +11,12 @@ public class Trade implements Comparable<Trade> {
     private String productType;
     private int hostId;
     private Date maturityDate;
+    private String maturityDateInput;
     private double exposure;
-
-    private String output;
-
-    public String getOutput() {
-        return output;
-    }
-
-    public void setOutput(String output) {
-        this.output = output;
-    }
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder(100);
+        StringBuilder builder = new StringBuilder(50);
         builder.append(facilityId);
         builder.append(",");
         builder.append(productType);
@@ -37,6 +29,19 @@ public class Trade implements Comparable<Trade> {
         return builder.toString();
     }
 
+    public void appendTo(final ByteBuffer buffer) {
+        buffer.put(String.valueOf(facilityId).getBytes());
+        buffer.put(Sort.COM_SEP);
+        buffer.put(productType.getBytes());
+        buffer.put(Sort.COM_SEP);
+        buffer.put(String.valueOf(hostId).getBytes());
+        buffer.put(Sort.COM_SEP);
+        buffer.put(maturityDateInput.getBytes());
+        buffer.put(Sort.COM_SEP);
+        buffer.put(String.valueOf(exposure).getBytes());
+        buffer.put(Sort.NEW_LINE);
+    }
+
     public Trade(String input) {
         String[] fields = parse(input, 5, ',');
         try {
@@ -44,6 +49,7 @@ public class Trade implements Comparable<Trade> {
             this.productType = fields[1];
             this.hostId = IntegerCache.getInstance().getInteger(fields[2]);
             this.maturityDate = DateCache.getInstance().getDate(fields[3]);
+            this.maturityDateInput = fields[3];
             this.exposure = Double.parseDouble(fields[4]);
         } catch (Exception e) {
             e.printStackTrace();
@@ -133,4 +139,5 @@ public class Trade implements Comparable<Trade> {
         res = Double.compare(this.exposure, o.getExposure());
         return res;
     }
+
 }

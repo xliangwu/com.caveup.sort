@@ -8,8 +8,8 @@ public class PCSort {
     @Test
     public void test() {
         Sorter sorter = new Sorter();
-        File inputFile = new File("E:\\resources\\Citi\\input.csv");
-        File outputFile = new File("E:\\resources\\Citi\\output2.csv");
+        File inputFile = new File("C:\\Resource\\ETS Hackthon\\input.csv");
+        File outputFile = new File("C:\\Resource\\ETS Hackthon\\output2.csv");
         File tempDir = new File("E:\\resources\\Citi");
 
         long start = System.currentTimeMillis();
@@ -22,4 +22,10 @@ public class PCSort {
         System.out.println("Use #" + (end - start) + "ms");
     }
 
+    @Test
+    public void t2(){
+        
+        System.out.println(((byte)','));
+        System.out.println(((byte)'\r'));
+    }
 }
