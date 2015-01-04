@@ -11,8 +11,8 @@ public class Trade implements Comparable<Trade> {
     private String productType;
     private int hostId;
     private Date maturityDate;
-    private String maturityDateInput;
     private double exposure;
+    private byte[] srcInputBytes;
 
     @Override
     public String toString() {
@@ -30,26 +30,32 @@ public class Trade implements Comparable<Trade> {
     }
 
     public void appendTo(final ByteBuffer buffer) {
-        buffer.put(String.valueOf(facilityId).getBytes());
-        buffer.put(Sort.COM_SEP);
-        buffer.put(productType.getBytes());
-        buffer.put(Sort.COM_SEP);
-        buffer.put(String.valueOf(hostId).getBytes());
-        buffer.put(Sort.COM_SEP);
-        buffer.put(maturityDateInput.getBytes());
-        buffer.put(Sort.COM_SEP);
-        buffer.put(String.valueOf(exposure).getBytes());
+        buffer.put(srcInputBytes);
         buffer.put(Sort.NEW_LINE);
     }
 
     public Trade(String input) {
         String[] fields = parse(input, 5, ',');
+        srcInputBytes = input.getBytes();
         try {
             this.facilityId = IntegerCache.getInstance().getInteger(fields[0]);
             this.productType = fields[1];
             this.hostId = IntegerCache.getInstance().getInteger(fields[2]);
             this.maturityDate = DateCache.getInstance().getDate(fields[3]);
-            this.maturityDateInput = fields[3];
+            this.exposure = Double.parseDouble(fields[4]);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Trade(byte[] inputBytes) {
+        String[] fields = parse(inputBytes, 5, ',');
+        srcInputBytes = inputBytes;
+        try {
+            this.facilityId = IntegerCache.getInstance().getInteger(fields[0]);
+            this.productType = fields[1];
+            this.hostId = IntegerCache.getInstance().getInteger(fields[2]);
+            this.maturityDate = DateCache.getInstance().getDate(fields[3]);
             this.exposure = Double.parseDouble(fields[4]);
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,6 +76,24 @@ public class Trade implements Comparable<Trade> {
 
         if (input.charAt(inputLen - 1) != sep) {
             res[index++] = input.substring(lastIndex);
+        }
+        return res;
+    }
+
+    private String[] parse(byte[] input, int size, char sep) {
+        String[] res = new String[size];
+        int inputLen = input.length;
+        int lastIndex = 0;
+        int index = 0;
+        for (int i = 0; i < inputLen; i++) {
+            if (input[i] == (byte) ',') {
+                res[index++] = new String(input, lastIndex, (i - lastIndex));
+                lastIndex = i + 1;
+            }
+        }
+
+        if (input[inputLen - 1] != (byte) ',') {
+            res[index++] = new String(input, lastIndex, (inputLen - lastIndex));
         }
         return res;
     }

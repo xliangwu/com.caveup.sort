@@ -3,7 +3,7 @@ package com.citi.ets;
 import java.io.File;
 import org.junit.Test;
 
-public class PCSort {
+public class NioSort {
 
     @Test
     public void test() {
@@ -22,10 +22,4 @@ public class PCSort {
         System.out.println("Use #" + (end - start) + "ms");
     }
 
-    @Test
-    public void t2() {
-
-        System.out.println(((byte) ','));
-        System.out.println(((byte) '\r'));
-    }
 }
