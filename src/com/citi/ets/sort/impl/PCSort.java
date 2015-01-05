@@ -15,7 +15,7 @@ import com.citi.ets.Trade;
 import com.citi.ets.cache.DateCache;
 import com.citi.ets.cache.IntegerCache;
 
-public class PCSort extends AbstractInMemorySort {
+public class PCSort extends AbstractInMemorySort<Trade>  {
 
     @Override
     public Trade[] loadTrades(File inputFile, File outputFile, File tempDir) throws Exception {

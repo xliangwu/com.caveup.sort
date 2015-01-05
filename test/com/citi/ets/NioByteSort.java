@@ -3,12 +3,12 @@ package com.citi.ets;
 import java.io.File;
 import org.junit.Test;
 
-public class NioSort {
+public class NioByteSort {
 
     @Test
     public void test() {
         Sorter sorter = new Sorter();
-        File inputFile = new File("E:\\resources\\Citi\\input2.csv");
+        File inputFile = new File("E:\\resources\\Citi\\input.csv");
         File outputFile = new File("E:\\resources\\Citi\\output2.csv");
         File tempDir = new File("E:\\resources\\Citi");
 

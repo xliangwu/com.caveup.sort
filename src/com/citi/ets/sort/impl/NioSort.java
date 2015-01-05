@@ -14,7 +14,7 @@ import com.citi.ets.Trade;
 import com.citi.ets.cache.DateCache;
 import com.citi.ets.cache.IntegerCache;
 
-public class NioSort extends AbstractInMemorySort {
+public class NioSort extends AbstractInMemorySort<Trade> {
 
     private String header = null;
 

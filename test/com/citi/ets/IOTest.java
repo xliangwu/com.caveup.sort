@@ -158,7 +158,7 @@ public class IOTest {
         buf.putLong(13);
         System.out.println(Arrays.toString(buf.array()));
 
-        System.out.println(Arrays.toString(String.valueOf("\r\n").getBytes()));
+        System.out.println(Arrays.toString(String.valueOf(",").getBytes()));
         System.out.println(Arrays.toString(intToBytes2(13)));
     }
 
