@@ -1,6 +1,7 @@
 package com.citi.ets.sort.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
@@ -20,52 +21,64 @@ public class NioByteSort extends AbstractInMemorySort<TradeByte> {
 
     @Override
     public TradeByte[] loadTrades(File inputFile, File outputFile, File tempDir) throws Exception {
-        List<TradeByte> trades = new ArrayList<TradeByte>(10000000);
-        RandomAccessFile fout = new RandomAccessFile(inputFile, "r");
-        FileChannel fc = fout.getChannel();
+        List<TradeByte> trades = new ArrayList<TradeByte>(1000000);
+        FileInputStream fin = new FileInputStream(inputFile);
+        FileChannel fc = fin.getChannel();
 
-        MappedByteBuffer buffer = fc.map(MapMode.READ_ONLY, 0, inputFile.length());
+        ByteBuffer buffer = ByteBuffer.allocate(8192);
         boolean isHeaderLine = false;
         byte b = 0;
 
         byte[][] lineBytes = new byte[5][];
         int index = 0;
-        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(200);
-        for (int i = 0; i < buffer.limit(); i++) {
-            b = buffer.get();
-            if (b != 13 && b != 10 && b != COMMA_BYTE) {
-                byteBuffer.put(b);
-            }
+        int i = 0;
 
-            if (b == COMMA_BYTE || b == 13) {
-                byteBuffer.flip();
-                lineBytes[index] = new byte[byteBuffer.limit()];
-                byteBuffer.get(lineBytes[index]);
-                byteBuffer.clear();
-                index++;
-            }
-
-            if (!buffer.hasRemaining() && byteBuffer.flip().limit() > 0) {
-                lineBytes[index] = new byte[byteBuffer.limit()];
-                byteBuffer.get(lineBytes[index]);
-                byteBuffer.clear();
-                index++;
-            }
-            // one line
-            if (index == 5) {
-                if (!isHeaderLine) {
-                    isHeaderLine = true;
-                    this.header = new StringBuilder().append(lineBytes[0]).append(lineBytes[1]).append(lineBytes[2])
-                            .append(lineBytes[3]).append(lineBytes[4]).toString();
-                } else {
-                    trades.add(new TradeByte(lineBytes));
+        byte[] tmpByte = new byte[100];
+        int t = 0;
+        byte[] bufferBytes = null;
+        while (fc.read(buffer) != -1) {
+            buffer.flip();
+            bufferBytes = buffer.array();
+            for (i = 0; i < buffer.limit(); i++) {
+                b = bufferBytes[i];
+                if (b != 13 && b != 10 && b != COMMA_BYTE) {
+                    tmpByte[t++] = b;
                 }
-                index = 0;
+
+                if (b == COMMA_BYTE || b == 13) {
+                    lineBytes[index] = new byte[t];
+                    System.arraycopy(tmpByte, 0, lineBytes[index], 0, t);
+                    t = 0;
+                    index++;
+                }
+
+                // one line
+                if (index == 5) {
+                    if (!isHeaderLine) {
+                        isHeaderLine = true;
+                        this.header = new StringBuilder().append(lineBytes[0]).append(lineBytes[1])
+                                .append(lineBytes[2]).append(lineBytes[3]).append(lineBytes[4]).toString();
+                    } else {
+                        trades.add(new TradeByte(lineBytes));
+                    }
+                    index = 0;
+                    lineBytes = new byte[5][];
+                }
             }
+
+            // don't contains \r\n
+            if (fc.position() == inputFile.length() && index == 4) {
+                lineBytes[index] = new byte[t];
+                System.arraycopy(tmpByte, 0, lineBytes[index], 0, t);
+                t = 0;
+                trades.add(new TradeByte(lineBytes));
+            }
+
+            buffer.clear();
         }
 
         fc.close();
-        fout.close();
+        fin.close();
 
         return trades.toArray(new TradeByte[] {});
     }

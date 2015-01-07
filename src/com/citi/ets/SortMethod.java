@@ -2,7 +2,8 @@ package com.citi.ets;
 
 public enum SortMethod {
 
-    DEFAULT("default");
+    DEFAULT("default"),
+    NIO_BYTE_SORT("NioByteSort");
 
     private String method;
 
