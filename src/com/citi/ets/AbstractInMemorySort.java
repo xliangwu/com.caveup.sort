@@ -93,16 +93,7 @@ public abstract class AbstractInMemorySort<T> implements Sort {
             tmps[r++] = array[j++];
         }
 
-        // reset
-        r = 0;
-        for (i = s1; i < e1; i++) {
-            array[i] = tmps[r++];
-        }
-
-        for (j = s2; j < e2; j++) {
-            array[j] = tmps[r++];
-        }
-
+        System.arraycopy(tmps, 0, array, s1, len);
         tmps = null;
     }
 

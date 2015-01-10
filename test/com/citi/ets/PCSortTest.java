@@ -7,6 +7,9 @@ import com.citi.ets.sort.impl.CommonSort;
 
 public class PCSortTest {
 
+    /**
+     * 860M memory 16s old GC, 6 new GC
+     */
     @Test
     public void test() {
         File inputFile = new File("E:\\resources\\Citi\\input.csv");
