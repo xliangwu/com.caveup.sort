@@ -27,7 +27,7 @@ public abstract class AbstractInMemorySort<T> implements Sort {
         System.out.println("Output completed #" + i + " use #" + (System.currentTimeMillis() - start) + "ms");
     }
 
-    private void doSort(T[] trades, long start) throws InterruptedException, ExecutionException {
+    protected void doSort(T[] trades, long start) throws InterruptedException, ExecutionException {
         ExecutorService threadPool = Executors.newCachedThreadPool();
         int core = Runtime.getRuntime().availableProcessors();
         int threads = core <= 0 ? 1 : core;
@@ -48,6 +48,7 @@ public abstract class AbstractInMemorySort<T> implements Sort {
         for (Future<Integer> future : futureList) {
             future.get();
         }
+        threadPool.shutdown();
         System.out.println("PartitionSort compeleted, use #" + (System.currentTimeMillis() - start) + "ms");
         sortedMerge(trades, threadIndex, 0, threads);
     }

@@ -13,7 +13,7 @@ public class PCSortTest {
     @Test
     public void test() {
         File inputFile = new File("E:\\resources\\Citi\\input.csv");
-        File outputFile = new File("E:\\resources\\Citi\\output2.csv");
+        File outputFile = new File("E:\\resources\\Citi\\output_correct.csv");
         File tempDir = new File("E:\\resources\\Citi");
 
         long start = System.currentTimeMillis();

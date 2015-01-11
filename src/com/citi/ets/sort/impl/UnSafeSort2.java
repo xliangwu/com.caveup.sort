@@ -11,9 +11,8 @@ import java.nio.channels.FileChannel.MapMode;
 import sun.misc.Unsafe;
 import com.citi.ets.AbstractInMemorySort;
 import com.citi.ets.Sort;
-import com.citi.ets.sort.impl.UnSafeSort.ReferIndex;
 
-public class UnSafeSort extends AbstractInMemorySort<ReferIndex> {
+public class UnSafeSort2 extends AbstractInMemorySort<Object> {
 
     private static final Unsafe unsafe;
 
@@ -48,7 +47,7 @@ public class UnSafeSort extends AbstractInMemorySort<ReferIndex> {
         File tempDir = new File("E:\\resources\\Citi");
 
         long start = System.currentTimeMillis();
-        UnSafeSort sort = new UnSafeSort();
+        UnSafeSort2 sort = new UnSafeSort2();
         sort.sort(inputFile, outputFile, tempDir);
         long end = System.currentTimeMillis();
         System.out.println("Use #" + (end - start) + "ms");
@@ -56,10 +55,10 @@ public class UnSafeSort extends AbstractInMemorySort<ReferIndex> {
     }
 
     @Override
-    public ReferIndex[] loadTrades(File inputFile, File outputFile, File tempDir) throws Exception {
+    public Object[] loadTrades(File inputFile, File outputFile, File tempDir) throws Exception {
         long start = System.currentTimeMillis();
         int tradeSize = 5000000;
-        ReferIndex[] referIndexs = new ReferIndex[tradeSize];
+        Object[] referIndexs = new Object[tradeSize];
 
         long requiredHeap = tradeSize * DirectMemoryTrade.getObjectSize();
         address = unsafe.allocateMemory(requiredHeap);
@@ -87,7 +86,7 @@ public class UnSafeSort extends AbstractInMemorySort<ReferIndex> {
         }
         i++;
         get(tradeIndex);
-        referIndexs[tradeIndex] = new ReferIndex(tradeIndex);
+        referIndexs[tradeIndex] = tradeIndex;
         tradeIndex++;
         for (; i < len; i++) {
             b = filesBytes[i];
@@ -120,7 +119,7 @@ public class UnSafeSort extends AbstractInMemorySort<ReferIndex> {
             // one line
             if (findex == 5 && tradeIndex < tradeSize) {
                 get(tradeIndex);
-                referIndexs[tradeIndex] = new ReferIndex(tradeIndex);
+                referIndexs[tradeIndex] = tradeIndex;
                 tradeIndex++;
                 findex = 0;
             }
@@ -137,7 +136,7 @@ public class UnSafeSort extends AbstractInMemorySort<ReferIndex> {
     }
 
     @Override
-    public void outputAfterSort(ReferIndex[] trades, File inputFile, File outputFile, File tempDir) throws Exception {
+    public void outputAfterSort(Object[] trades, File inputFile, File outputFile, File tempDir) throws Exception {
         if (outputFile.exists()) {
             outputFile.delete();
         }
@@ -148,8 +147,8 @@ public class UnSafeSort extends AbstractInMemorySort<ReferIndex> {
         MappedByteBuffer byteBuffer = fc.map(MapMode.READ_WRITE, 0, inputFile.length());
         byteBuffer.put(header);
         byteBuffer.put(Sort.NEW_LINE);
-        for (ReferIndex trade : trades) {
-            get(trade.getIndex());
+        for (Object index : trades) {
+            get((int) index);
             putByte(byteBuffer, longToByte(flyweight.getFacilityId()));
             byteBuffer.put(COM_SEP);
             putStringByte(byteBuffer, longToString(flyweight.getProductType()));
