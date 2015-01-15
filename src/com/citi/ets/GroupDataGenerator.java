@@ -10,24 +10,25 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-public class DataGenerator {
+public class GroupDataGenerator {
 
     static Random rand = new Random();
 
     public static void main(String[] args) throws Exception {
 
         long time = System.currentTimeMillis();
-        int rows = 5 * 1000 * 1000;
+        int rows = 5000 * 1000 * 1;
         File file = new File("input.csv");
         try (PrintWriter out = new PrintWriter(file);) {
-            out.println("Facility ID(Integer/SORT ASC),Product Type(String/SORT ASC),Host ID(Integer/SORT ASC),Maturity(Date/SORT ASC),Exposure(Double/SORT ASC)");
-            new DataGenerator(
+            out.println("Facility ID(Integer/GROUP BY/SORT ASC),Product Type(String/GROUP BY/SORT DESC),Trade Count(Integer/SUM/),Maturity(Date/MAX/),Maturity2(Date/MIN/),Exposure(Long/SUM/)");
+            new GroupDataGenerator(
             //
-                    new IntGenerator(10000, 50000, 100)// FacilityID
+                    new IntGenerator(1, 50000, 100)// FacilityID
                     , new StringGenerator(10, 100)// ProductyType
                     , new IntGenerator(100, 1000, 100)// Host ID
                     , new DateGenerator("01/01/2000", "12/31/2020", 100)// Maturity
-                    , new DoubleGenerator(0, 5000000, rows)// Exposure
+                    , new DateGenerator("01/01/2000", "12/31/2020", 100)// Maturity
+                    , new IntGenerator(0, 10000, rows)// Exposure
             //
             ).generate(rows, out);
             time = System.currentTimeMillis() - time;
@@ -37,7 +38,7 @@ public class DataGenerator {
 
     ColumnGenerator[] generators;
 
-    public DataGenerator(ColumnGenerator... generators) {
+    public GroupDataGenerator(ColumnGenerator... generators) {
         super();
         this.generators = generators;
     }
@@ -68,10 +69,14 @@ interface ColumnGenerator {
 
 class IntGenerator implements ColumnGenerator {
 
-    int min;
-    int max;
+    long min;
+
+    long max;
+
     int total;
+
     Random rand = new Random();
+
     int scope;
 
     public IntGenerator(int min, int max, int total) {
@@ -84,7 +89,7 @@ class IntGenerator implements ColumnGenerator {
 
     @Override
     public String gen() {
-        return Integer.toString((min + rand.nextInt(total) * scope / total));
+        return Long.toString((min + rand.nextInt(total) * scope / total));
     }
 
 }
@@ -92,9 +97,13 @@ class IntGenerator implements ColumnGenerator {
 class DoubleGenerator implements ColumnGenerator {
 
     double min;
+
     double max;
+
     double scope;
+
     int total;
+
     Random rand = new Random();
 
     public DoubleGenerator(double min, double max, int total) {
@@ -114,11 +123,15 @@ class DoubleGenerator implements ColumnGenerator {
 class DateGenerator implements ColumnGenerator {
 
     long min;
+
     long max;
+
     long scope;
+
     int total;
 
     Random rand = new Random();
+
     SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
 
     public DateGenerator(String min, String max, int total) throws ParseException {
@@ -138,10 +151,13 @@ class DateGenerator implements ColumnGenerator {
 class StringGenerator implements ColumnGenerator {
 
     private static final String CHARS = " abcdef ghijklmn opqrst uvwxyz ABCDEFG HIJKLMN OPQRST UVWXYZ 01234 56789 ";
+
     int len;
+
     int total;
 
     Random rand = new Random();
+
     List<String> list = new ArrayList<String>();
 
     public StringGenerator(int len, int total) {
@@ -156,6 +172,7 @@ class StringGenerator implements ColumnGenerator {
     char[] chars = CHARS.toCharArray();
 
     String randString(int len) {
+        len = len / 2 + rand.nextInt(len / 2);
         char[] chars = this.chars;
         int clen = chars.length;
         char[] str = new char[len];
@@ -169,5 +186,4 @@ class StringGenerator implements ColumnGenerator {
     public String gen() {
         return list.get(rand.nextInt(list.size()));
     }
-
 }

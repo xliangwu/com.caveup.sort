@@ -30,6 +30,10 @@ public final class DateCache {
         return localDateFormat.get().format(date);
     }
 
+    public String formatDate(Long date) {
+        return localDateFormat.get().format(date);
+    }
+
     public Date getDate(String input) {
         Date res = dateCacheMap.get(input);
         if (null == res) {
