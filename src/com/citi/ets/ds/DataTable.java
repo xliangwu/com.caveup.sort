@@ -55,7 +55,7 @@ public final class DataTable {
     }
 
     public void addRow(String input) {
-        String[] fields = input.split(",");
+        String[] fields = parse(input, columns.length, ',');
 
         StringBuilder keyBuilder = new StringBuilder();
         Column<?> col = null;
@@ -88,6 +88,24 @@ public final class DataTable {
             }
         }
 
+    }
+
+    private String[] parse(String input, int size, char sep) {
+        String[] res = new String[size];
+        int inputLen = input.length();
+        int lastIndex = 0;
+        int index = 0;
+        for (int i = 0; i < inputLen; i++) {
+            if (input.charAt(i) == sep) {
+                res[index++] = input.substring(lastIndex, i);
+                lastIndex = i + 1;
+            }
+        }
+
+        if (input.charAt(inputLen - 1) != sep) {
+            res[index++] = input.substring(lastIndex);
+        }
+        return res;
     }
 
     public void clearCache() {
