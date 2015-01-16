@@ -9,7 +9,7 @@ import com.citi.ets.meta.Column;
 public final class DataTable {
 
     private Column<?>[] columns;
-    private Map<String, Integer> groupByCacheMap = new HashMap<String, Integer>();
+    private Map<String, Integer> groupByCacheMap = new HashMap<String, Integer>(10000);
     private int rowIndex = 0;
     private Integer[] referIndex;
     private boolean[] grouped;
@@ -82,6 +82,37 @@ public final class DataTable {
 
     }
 
+    public void addRow(String[] fields) {
+        StringBuilder keyBuilder = new StringBuilder(40);
+        for (int i = 0; i < fields.length; i++) {
+            if (grouped[i]) {
+                keyBuilder.append(fields[i]);
+            }
+        }
+
+        Column<?> col = null;
+        String f = null;
+        Integer index = null;
+        String key = keyBuilder.toString();
+        index = groupByCacheMap.get(key);
+        if (null != index) {
+            for (int i = 0; i < fields.length; i++) {
+                col = columns[i];
+                f = fields[i];
+                col.mergeRow(f, index);
+            }
+        } else {
+            groupByCacheMap.put(key, rowIndex);
+            rowIndex++;
+            for (int i = 0; i < fields.length; i++) {
+                col = columns[i];
+                f = fields[i];
+                col.addRow(f);
+            }
+        }
+
+    }
+
     private String[] parse(StringBuilder key, String input, int size, char sep) {
         String[] res = new String[size];
         int inputLen = input.length();
@@ -122,5 +153,9 @@ public final class DataTable {
         for (int i = 0; i < columns.length; i++) {
             grouped[i] = columns[i].isGrouped();
         }
+    }
+
+    public Column<?>[] getColumns() {
+        return columns;
     }
 }

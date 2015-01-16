@@ -5,6 +5,7 @@ import org.junit.Test;
 import com.citi.ets.ds.DataTable;
 import com.citi.ets.funs.SumFunction;
 import com.citi.ets.sort.impl.GroupSort;
+import com.citi.ets.sort.impl.GroupSort2;
 
 public class GroupSortTest {
 
@@ -33,6 +34,23 @@ public class GroupSortTest {
         long start = System.currentTimeMillis();
         try {
             GroupSort sorter = new GroupSort();
+            sorter.sort(inputFile, outputFile, tempDir);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("Use #" + (end - start) + "ms");
+    }
+
+    @Test
+    public void t2() {
+        File inputFile = new File("E:\\resources\\Citi\\input.csv");
+        File outputFile = new File("E:\\resources\\Citi\\output_correct.csv");
+        File tempDir = new File("E:\\resources\\Citi");
+
+        long start = System.currentTimeMillis();
+        try {
+            GroupSort2 sorter = new GroupSort2();
             sorter.sort(inputFile, outputFile, tempDir);
         } catch (Exception e) {
             e.printStackTrace();
