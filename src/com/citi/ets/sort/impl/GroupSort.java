@@ -6,6 +6,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import com.citi.ets.Sort;
+import com.citi.ets.cache.DateCache;
+import com.citi.ets.cache.IntegerCache;
+import com.citi.ets.cache.LongCache;
 import com.citi.ets.ds.DataTable;
 import com.citi.ets.funs.MaxFunction;
 import com.citi.ets.funs.MinFunction;
@@ -29,6 +32,9 @@ public class GroupSort implements Sort {
         loadGroupData(inputFile);
         System.out.println("Load completed use #" + (System.currentTimeMillis() - start) + "ms");
 
+        DateCache.getInstance().clear();
+        IntegerCache.getInstance().clear();
+        LongCache.getInstance().clear();
         dataTable.sort();
         System.out.println("Sort completed use #" + (System.currentTimeMillis() - start) + "ms");
 

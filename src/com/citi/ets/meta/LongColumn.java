@@ -2,6 +2,7 @@ package com.citi.ets.meta;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.citi.ets.cache.LongCache;
 
 public class LongColumn extends AbstractColumn<Long> {
 
@@ -14,7 +15,7 @@ public class LongColumn extends AbstractColumn<Long> {
 
     @Override
     public void addRow(String t) {
-        rows.add(Long.parseLong(t));
+        rows.add(LongCache.getInstance().getLong(t));
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.citi.ets.meta;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.citi.ets.cache.IntegerCache;
 
 public class IntegerColumn extends AbstractColumn<Integer> {
 
@@ -14,7 +15,7 @@ public class IntegerColumn extends AbstractColumn<Integer> {
 
     @Override
     public void addRow(String t) {
-        rows.add(Integer.parseInt(t));
+        rows.add(IntegerCache.getInstance().getInteger(t));
     }
 
     @Override

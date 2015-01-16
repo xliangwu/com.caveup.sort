@@ -3,23 +3,23 @@ package com.citi.ets.cache;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class IntegerCache {
+public final class LongCache {
 
-    private static final Map<String, Integer> intCacheMap = new HashMap<String, Integer>();
-    private static final IntegerCache SINGLE_INSTANCE = new IntegerCache();
+    private static final Map<String, Long> intCacheMap = new HashMap<String, Long>();
+    private static final LongCache SINGLE_INSTANCE = new LongCache();
 
-    private IntegerCache() {
+    private LongCache() {
     }
 
-    public static IntegerCache getInstance() {
+    public static LongCache getInstance() {
         return SINGLE_INSTANCE;
     }
 
-    public Integer getInteger(String input) {
-        Integer res = intCacheMap.get(input);
+    public Long getLong(String input) {
+        Long res = intCacheMap.get(input);
         if (null == res) {
             try {
-                res = Integer.parseInt(input);
+                res = Long.parseLong(input);
                 intCacheMap.put(input, res);
             } catch (Exception e) {
                 e.printStackTrace();

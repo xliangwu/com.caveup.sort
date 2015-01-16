@@ -12,6 +12,7 @@ public final class DataTable {
     private Map<String, Integer> groupByCacheMap = new HashMap<String, Integer>();
     private int rowIndex = 0;
     private Integer[] referIndex;
+    private boolean[] grouped;
 
     public void sort() {
         referIndex = new Integer[rowIndex];
@@ -55,20 +56,11 @@ public final class DataTable {
     }
 
     public void addRow(String input) {
-        String[] fields = parse(input, columns.length, ',');
+        StringBuilder keyBuilder = new StringBuilder(40);
+        String[] fields = parse(keyBuilder, input, columns.length, ',');
 
-        StringBuilder keyBuilder = new StringBuilder();
         Column<?> col = null;
         String f = null;
-        for (int i = 0; i < fields.length; i++) {
-            col = columns[i];
-            f = fields[i];
-
-            if (col.isGrouped()) {
-                keyBuilder.append(f).append("_");
-            }
-        }
-
         Integer index = null;
         String key = keyBuilder.toString();
         index = groupByCacheMap.get(key);
@@ -90,20 +82,28 @@ public final class DataTable {
 
     }
 
-    private String[] parse(String input, int size, char sep) {
+    private String[] parse(StringBuilder key, String input, int size, char sep) {
         String[] res = new String[size];
         int inputLen = input.length();
         int lastIndex = 0;
         int index = 0;
         for (int i = 0; i < inputLen; i++) {
             if (input.charAt(i) == sep) {
-                res[index++] = input.substring(lastIndex, i);
+                res[index] = input.substring(lastIndex, i);
+                if (grouped[index]) {
+                    key.append(res[index]);
+                }
+                index++;
                 lastIndex = i + 1;
             }
         }
 
         if (input.charAt(inputLen - 1) != sep) {
-            res[index++] = input.substring(lastIndex);
+            res[index] = input.substring(lastIndex);
+            if (grouped[index]) {
+                key.append(res[index]);
+            }
+            index++;
         }
         return res;
     }
@@ -118,5 +118,9 @@ public final class DataTable {
 
     public void setColumns(Column<?>[] columns) {
         this.columns = columns;
+        grouped = new boolean[columns.length];
+        for (int i = 0; i < columns.length; i++) {
+            grouped[i] = columns[i].isGrouped();
+        }
     }
 }
