@@ -23,11 +23,11 @@ public class GroupDataGenerator {
             out.println("Facility ID(Integer/GROUP BY/SORT ASC),Product Type(String/GROUP BY/SORT DESC),Trade Count(Integer/SUM/),Maturity(Date/MAX/),Maturity2(Date/MIN/),Exposure(Long/SUM/)");
             new GroupDataGenerator(
             //
-                    new IntGenerator(1, 50000, 100)// FacilityID
-                    , new StringGenerator(10, 100)// ProductyType
-                    , new IntGenerator(100, 1000, 100)// Host ID
-                    , new DateGenerator("01/01/2000", "12/31/2020", 100)// Maturity
-                    , new DateGenerator("01/01/2000", "12/31/2020", 100)// Maturity
+                    new IntGenerator(1, 50000, 1000)// FacilityID
+                    , new StringGenerator(10, 1000)// ProductyType
+                    , new IntGenerator(100, 1000, 1000)// Host ID
+                    , new DateGenerator("01/01/2000", "12/31/2020", 1000)// Maturity
+                    , new DateGenerator("01/01/2000", "12/31/2020", 1000)// Maturity
                     , new IntGenerator(0, 10000, rows)// Exposure
             //
             ).generate(rows, out);
