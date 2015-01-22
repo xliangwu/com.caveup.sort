@@ -1,5 +1,6 @@
 package com.citi.ets.ds;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -20,39 +21,36 @@ public final class DataTable {
             referIndex[i] = i;
         }
 
-        Arrays.sort(referIndex, new Comparator<Integer>() {
-
-            @SuppressWarnings({ "rawtypes", "unchecked" })
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                int res = 0;
-                for (int i = 0; i < columns.length; i++) {
-                    Comparable<Object> a = (Comparable) columns[i].getData(o1);
-                    Comparable<Object> b = (Comparable) columns[i].getData(o2);
-                    if (columns[i].getOrder()) {
-                        res = a.compareTo(b);
-                    } else {
-                        res = b.compareTo(a);
-                    }
-
-                    if (res != 0) {
-                        return res;
-                    }
-                }
-                return 0;
-            }
-        });
+        // Arrays.sort(referIndex, new Comparator<Integer>() {
+        //
+        // @SuppressWarnings({ "rawtypes", "unchecked" })
+        // @Override
+        // public int compare(Integer o1, Integer o2) {
+        // int res = 0;
+        // for (int i = 0; i < columns.length; i++) {
+        // Comparable<Object> a = (Comparable) columns[i].getData(o1);
+        // Comparable<Object> b = (Comparable) columns[i].getData(o2);
+        // if (columns[i].getOrder()) {
+        // res = a.compareTo(b);
+        // } else {
+        // res = b.compareTo(a);
+        // }
+        //
+        // if (res != 0) {
+        // return res;
+        // }
+        // }
+        // return 0;
+        // }
+        // });
     }
 
-    public String getRow(int index) {
-        StringBuilder res = new StringBuilder(50);
-        for (Column<?> col : columns) {
-            res.append(col.getFormatData(referIndex[index]));
-            res.append(",");
+    public void appendByte(final ByteBuffer buffer, int index) {
+        for (int i = 0; i < columns.length; i++) {
+            columns[i].appendToBuffer(buffer, referIndex[index]);
+            if (i < columns.length - 1)
+                buffer.put((byte) ',');
         }
-
-        res.deleteCharAt(res.length() - 1);
-        return res.toString();
     }
 
     public void addRow(String input) {

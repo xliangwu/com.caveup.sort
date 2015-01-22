@@ -3,6 +3,7 @@ package com.citi.ets.sort.impl;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -104,15 +105,17 @@ public class GroupSort2 implements Sort {
     }
 
     private void doOutput(File outputFile, File tempDir) throws Exception {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile), 32768);
-        writer.write(header);
-        writer.newLine();
+        FileOutputStream fout = new FileOutputStream(outputFile);
+        FileChannel fc = fout.getChannel();
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+
         for (int i = 0; i < dataTable.getRowIndex(); i++) {
-            writer.write(dataTable.getRow(i));
-            writer.newLine();
+            dataTable.appendByte(buffer, i);
+            buffer.put((byte) '\n');
         }
-        writer.flush();
-        writer.close();
+        buffer.flip();
+        fc.write(buffer);
+        fout.close();
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

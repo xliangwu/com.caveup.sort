@@ -1,10 +1,11 @@
 package com.citi.ets.sort.impl;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import com.citi.ets.Sort;
 import com.citi.ets.cache.DateCache;
 import com.citi.ets.cache.IntegerCache;
@@ -60,15 +61,21 @@ public class GroupSort implements Sort {
     }
 
     private void doOutput(File outputFile, File tempDir) throws Exception {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile), 32768);
-        writer.write(header);
-        writer.newLine();
+        FileOutputStream fout = new FileOutputStream(outputFile);
+        FileChannel fc = fout.getChannel();
+        ByteBuffer buffer = ByteBuffer.allocate(8192);
+
+        buffer.put(header.getBytes()).put((byte) '\r').put((byte) '\n');
         for (int i = 0; i < dataTable.getRowIndex(); i++) {
-            writer.write(dataTable.getRow(i));
-            writer.newLine();
+            dataTable.appendByte(buffer, i);
+            buffer.put((byte) '\r');
+            buffer.put((byte) '\n');
+            buffer.flip();
+            fc.write(buffer);
+            buffer.clear();
         }
-        writer.flush();
-        writer.close();
+
+        fout.close();
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

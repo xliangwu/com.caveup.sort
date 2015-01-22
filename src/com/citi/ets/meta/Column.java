@@ -1,12 +1,13 @@
 package com.citi.ets.meta;
 
+import java.nio.ByteBuffer;
 import com.citi.ets.funs.Function;
 
 public interface Column<T extends Comparable<T>> {
 
-    public T getData(int index);
+    public Object getData(int index);
 
-    public String getFormatData(int index);
+    public void appendToBuffer(final ByteBuffer buffer, int index);
 
     public void setData(int index, T t);
 

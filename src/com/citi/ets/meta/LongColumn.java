@@ -39,8 +39,7 @@ public class LongColumn extends AbstractColumn<Long> {
         LONG_FLY_WEIGHT.setObjectOffset(offset);
     }
 
-    @Override
-    public Long getData(int index) {
+    public Object getData(int index) {
         check(index);
         updateFlyWeightRef(index);
         return LONG_FLY_WEIGHT.getValue();
@@ -57,9 +56,9 @@ public class LongColumn extends AbstractColumn<Long> {
 
     @Override
     public void mergeRow(String t, int index) {
-        Long a = getData(index);
-        Long b = Long.parseLong(t);
         if (null != fun) {
+            long a = (long) getData(index);
+            long b = (long) Long.parseLong(t);
             Long res = fun.execute(a, b);
             setData(index, res);
         }

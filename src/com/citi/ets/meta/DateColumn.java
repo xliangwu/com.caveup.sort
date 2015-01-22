@@ -1,10 +1,10 @@
 package com.citi.ets.meta;
 
 import java.lang.reflect.Field;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import sun.misc.Unsafe;
-import com.citi.ets.cache.DateCache;
 
 public class DateColumn extends AbstractColumn<Long> {
 
@@ -40,7 +40,7 @@ public class DateColumn extends AbstractColumn<Long> {
     }
 
     @Override
-    public Long getData(int index) {
+    public Object getData(int index) {
         check(index);
         updateFlyWeightRef(index);
         return LONG_FLY_WEIGHT.getValue();
@@ -50,22 +50,32 @@ public class DateColumn extends AbstractColumn<Long> {
     public void addRow(String t) {
         check(index);
         updateFlyWeightRef(index);
-        long l = DateCache.getInstance().getDate(t).getTime();
+        long l = dateToLong(t.getBytes());
         LONG_FLY_WEIGHT.setValue(l);
         index++;
     }
 
     @Override
-    public String getFormatData(int index) {
-        return DateCache.getInstance().formatDate(getData(index));
+    public void appendToBuffer(final ByteBuffer buffer, int index) {
+        byte[] bs = longToDate((long) getData(index));
+        buffer.put(bs[4]);
+        buffer.put(bs[5]);
+        buffer.put((byte) 47);
+        buffer.put(bs[6]);
+        buffer.put(bs[7]);
+        buffer.put((byte) 47);
+        buffer.put(bs[0]);
+        buffer.put(bs[1]);
+        buffer.put(bs[2]);
+        buffer.put(bs[3]);
     }
 
     @Override
     public void mergeRow(String t, int index) {
-        Long a = getData(index);
-        Long b = DateCache.getInstance().getDate(t).getTime();
         if (null != fun) {
-            Long res = fun.execute(a, b);
+            long a = (long) getData(index);
+            long b = dateToLong(t.getBytes());
+            long res = fun.execute(a, b);
             setData(index, res);
         }
     }
@@ -75,6 +85,37 @@ public class DateColumn extends AbstractColumn<Long> {
         check(index);
         updateFlyWeightRef(index);
         LONG_FLY_WEIGHT.setValue(t);
+    }
+
+    // 08/10/2008
+    private static long dateToLong(byte[] bb) {
+        long r = 0;
+        r <<= 8;
+        r |= bb[6] & 0xFF;
+        r <<= 8;
+        r |= bb[7] & 0xFF;
+        r <<= 8;
+        r |= bb[8] & 0xFF;
+        r <<= 8;
+        r |= bb[9] & 0xFF;
+        r <<= 8;
+        r |= bb[0] & 0xFF;
+        r <<= 8;
+        r |= bb[1] & 0xFF;
+        r <<= 8;
+        r |= bb[3] & 0xFF;
+        r <<= 8;
+        r |= bb[4] & 0xFF;
+
+        return r;
+    }
+
+    public static byte[] longToDate(long l) {
+        byte[] b = new byte[8];
+        for (int i = 0; i < 8; i++) {
+            b[7 - i] = (byte) ((l >> 8 * i) & 0xFF);
+        }
+        return b;
     }
 
     private static class LongRef {

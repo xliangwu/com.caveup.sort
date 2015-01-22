@@ -56,9 +56,9 @@ public class IntegerColumn extends AbstractColumn<Integer> {
 
     @Override
     public void mergeRow(String t, int index) {
-        Integer a = getData(index);
-        Integer b = Integer.parseInt(t);
         if (null != fun) {
+            Integer a = getData(index);
+            Integer b = Integer.parseInt(t);
             Integer res = fun.execute(a, b);
             setData(index, res);
         }

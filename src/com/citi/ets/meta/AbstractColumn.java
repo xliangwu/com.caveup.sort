@@ -1,5 +1,6 @@
 package com.citi.ets.meta;
 
+import java.nio.ByteBuffer;
 import com.citi.ets.funs.Function;
 
 public abstract class AbstractColumn<T extends Comparable<T>> implements Column<T> {
@@ -19,8 +20,8 @@ public abstract class AbstractColumn<T extends Comparable<T>> implements Column<
     }
 
     @Override
-    public String getFormatData(int index) {
-        return String.valueOf(getData(index));
+    public void appendToBuffer(final ByteBuffer buffer, int index) {
+        buffer.put(String.valueOf(getData(index)).getBytes());
     }
 
     @Override

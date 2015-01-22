@@ -19,9 +19,9 @@ public class DoubleColumn extends AbstractColumn<Double> {
 
     @Override
     public void mergeRow(String t, int index) {
-        double a = getData(index);
-        double b = Double.parseDouble(t);
         if (null != fun) {
+            double a = getData(index);
+            double b = Double.parseDouble(t);
             Double res = fun.execute(a, b);
             setData(index, res);
         }
